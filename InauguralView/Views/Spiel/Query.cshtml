@@ -1,0 +1,73 @@
+﻿@model IEnumerable<InauguralView.Models.SpielSearchDoc>
+
+
+@{
+    ViewData["Title"] = "Search List";
+    int searchSkip = (int)ViewData["SearchSkip"];
+    int searchTop = (int)ViewData["SearchTop"];
+    int searchCount = (int)(long)ViewData["SearchResultsCount"];
+    int maxSkip = searchCount - searchTop;
+    int previousSkip = 0;
+    int nextSkip = 0;
+
+    if (searchSkip > 0)
+    {
+        previousSkip = (searchSkip - searchTop >= 0) ? (searchSkip - searchTop) : 0;
+    }
+
+    if (searchSkip < maxSkip)
+    {
+        nextSkip = (searchSkip + searchTop < maxSkip) ? (searchSkip + searchTop) : maxSkip;
+    }
+
+    ViewData["Title"] = "Query";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Search</h2>
+<div style="margin-bottom: 50px;">
+    <form method="get" action="/Spiel/Query">
+        <input type="text" name="search" value="@ViewData["SearchString"]" />
+    </form>
+</div>
+<div>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Speaker)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date.Year)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Sentiment)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Speaker)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date.Year)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sentiment)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id=item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</div>
+<div>
+    @Html.ActionLink("Previous", "Query", "Spiel", new { search = ViewData["SearchString"], skip = previousSkip, top = searchTop })
+    Showing results: @ViewData["SearchSkip"] through @((int)ViewData["SearchSkip"] + (int)ViewData["SearchTop"]) (of @searchCount)
+    @Html.ActionLink("Next", "Query", "Spiel", new { search = ViewData["SearchString"], skip = nextSkip, top = searchTop })
+</div>

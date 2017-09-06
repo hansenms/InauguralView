@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.Azure.Search;
 
 namespace InauguralView.Models
 {
@@ -53,6 +54,33 @@ namespace InauguralView.Models
 
         [JsonProperty(PropertyName = "KeyPhrases")]
         public IList<string> KeyPhrases { get; set; }
+    }
 
+    public class SpielSearchDoc
+    {
+        [System.ComponentModel.DataAnnotations.Key]
+        [JsonProperty(PropertyName = "id")]
+        [IsFilterable,IsSortable,IsFacetable,IsSearchable]
+        public string Id { get; set; }
+
+        [JsonProperty(PropertyName = "speaker")]
+        [IsSearchable, IsFilterable, IsSortable, IsFacetable]
+        public string Speaker { get; set; }
+
+        [JsonProperty(PropertyName = "spieldate")]
+        [IsFilterable, IsSortable, IsFacetable, IsSearchable]
+        public DateTime Date { get; set; }
+
+        [JsonProperty(PropertyName = "sentiment")]
+        [IsFilterable, IsSortable, IsFacetable, IsSearchable]
+        public double Sentiment { get; set; }
+
+        [JsonProperty(PropertyName = "paragraphs")]
+        [IsFilterable, IsFacetable, IsSearchable]
+        public IList<string> Paragraphs { get; set; }
+
+        [JsonProperty(PropertyName = "keyphrases")]
+        [IsFilterable, IsFacetable, IsSearchable]
+        public IList<string> KeyPhrases { get; set; }
     }
 }
