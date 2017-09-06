@@ -1,0 +1,19 @@
+﻿@model InauguralView.Models.SpielEntry
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Html.DisplayFor(model => model.Spiel.Speaker) - @Html.DisplayFor(model => model.Spiel.Date.Year)</h2>
+
+<div>
+    <hr />
+@foreach (var p in Model.Spiel.Paragraphs)
+{
+    <p>@p</p>
+}
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
