@@ -14,6 +14,9 @@ namespace InauguralView.Models
 
         [JsonProperty(PropertyName = "Spiel")]
         public Spiel Spiel { get; set; }
+
+        [JsonProperty(PropertyName = "SpielAnalytics")]
+        public SpielAnalytics SpielAnalytics { get; set; }
     }
 
     public class Spiel

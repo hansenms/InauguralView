@@ -1,19 +1,39 @@
 ﻿@model InauguralView.Models.SpielEntry
-
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    List<int> red = new List<int>();
+    List<int> green = new List<int>();
+    for (int i = 0; i < Model.Spiel.Paragraphs.Count; i++ )
+    {
+        int illumination = 150;
+        int r = (int)Math.Floor(illumination * (1 - Model.SpielAnalytics.ParagraphAnalytics[i].Sentiment));
+        red.Add(r);
+        green.Add(illumination - r);
+    }
+
+    string sentimentString = Model.SpielAnalytics.SummaryAnalytics.Sentiment.ToString("N2");
+
 }
 
-<h2>@Html.DisplayFor(model => model.Spiel.Speaker) - @Html.DisplayFor(model => model.Spiel.Date.Year)</h2>
+<div style="background-color: rgb(255,255,255); margin: 1cm;">
+    <h2>@Html.DisplayFor(model => model.Spiel.Speaker) - @Html.DisplayFor(model => model.Spiel.Date.Year) (Sentiment: @sentimentString)</h2>
+    <div>
+        <hr />
+        <table>
+            @for (int i = 0; i < Model.Spiel.Paragraphs.Count; i++)
+            {
 
-<div>
-    <hr />
-@foreach (var p in Model.Spiel.Paragraphs)
-{
-    <p>@p</p>
-}
-</div>
-<div>
-    <a asp-action="Index">Back to List</a>
+                <tr>
+                    <td><div style="margin-bottom: 0.2cm; margin-right: 0.4cm;">@Model.SpielAnalytics.ParagraphAnalytics[i].Sentiment.ToString("N2")</div></td>
+                    <td><div style="margin-bottom: 0.2cm; color: rgb(@red[i],@green[i],0);">@Model.Spiel.Paragraphs[i]</div></td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div>
+        @Html.ActionLink("Back to search", "Index", new { orderby = @ViewData["SearchOrder"], search = @ViewData["SearchString"], skip = @ViewData["SearchSkip"], top = @ViewData["SearchTop"] })
+    </div>
 </div>

@@ -21,17 +21,24 @@ namespace InauguralView.Controllers
 
         public IConfiguration Configuration { get; }
 
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string id, string search = "*", int top = 10, int skip = 0, string orderby = "date")
         {
             if (id == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
             }
             SpielEntry s = await DocumentDBRepository<SpielEntry>.GetItemAsync(id);
+
+            ViewData["SearchTop"] = top;
+            ViewData["SearchSkip"] = skip;
+            ViewData["SearchString"] = search;
+            ViewData["searchOrder"] = orderby;
+
+
             return View(s);
         }
 
-        public async Task<IActionResult> Query(string search = "*", int top = 10, int skip = 0)
+        public async Task<IActionResult> Index(string search = "*", int top = 10, int skip = 0, string orderby="spieldate")
         {
             string searchServiceName = Configuration["SEARCHSERVICE_NAME"];
             string searchIndex = Configuration["SEARCHSERVICE_INDEX"];
@@ -45,11 +52,17 @@ namespace InauguralView.Controllers
             parameters =
                 new SearchParameters()
                 {
-                    Select = new[] { "id", "speaker","spieldate" },
+                    Select = new[] { "id", "speaker","spieldate", "sentiment" },
+                    Facets = new[] { "keyphrases" },
                     Top = top,
                     Skip = skip,
                     IncludeTotalResultCount = true
                 };
+
+            if (orderby != "relevance")
+            {
+                parameters.OrderBy = new[] { orderby };
+            }
 
             results = await indexClient.Documents.SearchAsync<SpielSearchDoc>(search, parameters);
 
@@ -57,6 +70,7 @@ namespace InauguralView.Controllers
             ViewData["SearchTop"] = top;
             ViewData["SearchSkip"] = skip;
             ViewData["SearchString"] = search;
+            ViewData["searchOrder"] = orderby;
 
             List<SpielSearchDoc> res = new List<SpielSearchDoc>();
 
@@ -67,12 +81,6 @@ namespace InauguralView.Controllers
 
 
             return View(res);
-        }
-    
-       public async Task<IActionResult> Index()
-        {
-            var spiels = await DocumentDBRepository<SpielEntry>.GetItemsAsync(d => true);
-            return View(spiels);
         }
     }
 }

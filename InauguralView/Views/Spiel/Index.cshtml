@@ -1,35 +1,83 @@
-﻿@model IEnumerable<InauguralView.Models.SpielEntry>
+﻿@model IEnumerable<InauguralView.Models.SpielSearchDoc>
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Search List";
+    int searchSkip = (int)ViewData["SearchSkip"];
+    int searchTop = (int)ViewData["SearchTop"];
+    int searchCount = (int)(long)ViewData["SearchResultsCount"];
+    int maxSkip = searchCount - searchTop;
+    int previousSkip = 0;
+    int nextSkip = 0;
+    string searchOrder = (string)ViewData["searchOrder"];
+
+    if (searchSkip > 0)
+    {
+        previousSkip = (searchSkip - searchTop >= 0) ? (searchSkip - searchTop) : 0;
+    }
+
+    if (searchSkip < maxSkip)
+    {
+        nextSkip = (searchSkip + searchTop < maxSkip) ? (searchSkip + searchTop) : maxSkip;
+    }
+
+    ViewData["Title"] = "Spiels";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Spiel Index</h2>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h2>Search</h2>
+<div style="margin-bottom: 50px;">
+    <form method="get" action="/Spiel">
+        <input type="search" name="search" value="@ViewData["SearchString"]"/>
+        @Html.DropDownList("orderby", new[] {
+            new SelectListItem { Value = "relevance", Text = "Relevance", Selected = (searchOrder == "relevance")},
+            new SelectListItem { Value = "spieldate", Text = "Date", Selected = (searchOrder == "spieldate")},
+            new SelectListItem { Value = "sentiment desc", Text = "Sentiment (high to low)", Selected = (searchOrder == "sentiment desc")},
+            new SelectListItem { Value = "sentiment asc", Text = "Sentiment (low to high)", Selected = (searchOrder == "sentiment asc")},
+        }, new { onchange = "this.form.submit();" })
+        <input type="submit" value="Search" onclick="this.form.submit();" />
+    </form>
+</div>
+<div>
 <table class="table">
     <thead>
         <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Spiel.Speaker)
+                    @Html.DisplayNameFor(model => model.Speaker)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date.Year)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Sentiment)
                 </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
+        string sentimentString = item.Sentiment.ToString("N2");
+
         <tr>
-            <td>@Html.DisplayFor(modelItem => item.Spiel.Speaker)</td>
             <td>
-                @Html.DisplayFor(modelItem => item.Spiel.Date.Year)
+                @Html.DisplayFor(modelItem => item.Speaker)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { id = item.id })
+                @Html.DisplayFor(modelItem => item.Date.Year)
+            </td>
+            <td>
+                @sentimentString
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id=item.Id, orderby = searchOrder, search= @ViewData["SearchString"], skip = searchSkip, top = searchTop})
             </td>
         </tr>
 }
     </tbody>
 </table>
+</div>
+<div>
+    @Html.ActionLink("Previous", "Index", "Spiel", new { search = ViewData["SearchString"], skip = previousSkip, top = searchTop, orderby = searchOrder })
+    Showing results: @ViewData["SearchSkip"] through @((int)ViewData["SearchSkip"] + (int)ViewData["SearchTop"]) (of @searchCount)
+    @Html.ActionLink("Next", "Index", "Spiel", new { search = ViewData["SearchString"], skip = nextSkip, top = searchTop, orderby = searchOrder })
+</div>

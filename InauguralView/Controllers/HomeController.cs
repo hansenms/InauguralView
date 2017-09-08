@@ -25,19 +25,6 @@ namespace InauguralView.Controllers
             return View();
         }
 
-        public async Task<IActionResult> About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            SpielEntry s = await DocumentDBRepository<SpielEntry>.GetItemAsync("5bcfaaf7-508c-44c5-bf45-6fa5df30c27b");
- 
-            Console.WriteLine("Spiel speaker: " + s.Spiel.Speaker);
-
-            ViewData["Speaker"] = s.Spiel.Speaker;
-
-            return View();
-        }
-
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
