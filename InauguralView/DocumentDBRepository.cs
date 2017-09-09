@@ -46,12 +46,10 @@ namespace InauguralView
             try
             {
                 Document document = await client.ReadDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
-                Console.WriteLine("DEBUG DOCUMENT: " + document.ToString());
                 return (T)(dynamic)document;
             }
             catch (DocumentClientException e)
             {
-                Console.WriteLine("Exception: " + e.ToString());
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     return null;
