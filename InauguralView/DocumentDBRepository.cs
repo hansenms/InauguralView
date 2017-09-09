@@ -22,7 +22,7 @@ namespace InauguralView
         public static void Initialize(IConfiguration configuration)
         {
             Configuration = configuration;
-            client = new DocumentClient(new System.Uri(Configuration["DOCUMENTDB_ENDPOINT"]), Configuration["DOCUMENTDB_AUTHKEY"]);
+            client = new DocumentClient(new System.Uri(Configuration.GetConnectionString("DOCUMENTDB_ENDPOINT")), Configuration.GetConnectionString("DOCUMENTDB_AUTHKEY"));
         }
 
         public static async Task<IEnumerable<T>> GetItemsAsync(Expression<Func<T, bool>> predicate)

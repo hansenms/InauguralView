@@ -40,9 +40,9 @@ namespace InauguralView.Controllers
 
         public async Task<IActionResult> Index(string search = "*", int top = 10, int skip = 0, string orderby="spieldate")
         {
-            string searchServiceName = Configuration["SEARCHSERVICE_NAME"];
-            string searchIndex = Configuration["SEARCHSERVICE_INDEX"];
-            string searchApiKey = Configuration["SEARCHSERVICE_AUTHKEY"];
+            string searchServiceName = Configuration.GetConnectionString("SEARCHSERVICE_NAME");
+            string searchIndex = Configuration.GetConnectionString("SEARCHSERVICE_INDEX");
+            string searchApiKey = Configuration.GetConnectionString("SEARCHSERVICE_AUTHKEY");
 
             SearchIndexClient indexClient = new SearchIndexClient(searchServiceName, searchIndex, new SearchCredentials(searchApiKey));
 
